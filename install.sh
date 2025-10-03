@@ -1,4 +1,3 @@
-#!/bin/bash
 
 
 #Step 1) Check if root--------------------------------------
@@ -13,7 +12,7 @@ sudo apt-get update -y
 #-----------------------------------------------------------
 
 #Step 3) disable UART from retroflag install ---------------
-cd /boot/
+cd /boot/firmware/
 File=config.txt
 if grep -q "^enable_uart=1" "$File";
 	then
@@ -43,27 +42,34 @@ if [ -e $script ];
 		echo "Script will be installed now! Downloading ..."
 fi
 
-wget -N -q --show-progress "https://raw.githubusercontent.com/crcerror/retroflag-picase/master/SafeShutdown.py"
-wget -N -q --show-progress "https://raw.githubusercontent.com/crcerror/retroflag-picase/master/multi_switch.sh"
+wget -N -q --show-progress "https://raw.githubusercontent.com/ObinnaOnyeije/retroflag-picase/master/SafeShutdown.py"
+wget -N -q --show-progress "https://raw.githubusercontent.com/ObinnaOnyeije/retroflag-picase/master/multi_switch.sh"
 chmod +x multi_switch.sh
 
 #-----------------------------------------------------------
 
 #Step 6) Enable Python script to run on start up------------
-cd /etc/
-RC=rc.local
+cd /etc/systemd/system
+service=picase.service
 
-if grep -q "sudo python3 \/opt\/RetroFlag\/SafeShutdown.py \&" "$RC";
+if [ -e $service ];
 	then
-		echo "File /etc/rc.local already configured. Doing nothing."
+		echo "Script picase.service already exists. Overwriting file now!"
+		echo "Downloading ..."
 	else
-		sed -i -e "s/^exit 0/sudo python3 \/opt\/RetroFlag\/SafeShutdown.py \&\n&/g" "$RC"
-		echo "File /etc/rc.local configured."
+		echo "Script will be installed now! Downloading ..."
 fi
+
+wget -N -q --show-progress -O picase.service "https://raw.githubusercontent.com/ObinnaOnyeije/retroflag-picase/master/picase.systemd"
+chmod 644 $service
+systemctl daemon-reload
+systemctl enable $service
+systemctl start $service
+
 #-----------------------------------------------------------
 
 #Step 7) enable overlay file for powercut ---------------
-cd /boot/
+cd /boot/firmware/
 File=config.txt
 if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" $File; then
     echo "Enable overlay file"

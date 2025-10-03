@@ -1,0 +1,12 @@
+[Unit]
+Description=RetroFlag Pi Case safe shutdown
+DefaultDependencies=no
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/RetroFlag/SafeShutdown.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

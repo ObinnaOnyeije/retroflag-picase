@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 from gpiozero import Button, LED
 import os 
 from signal import pause
@@ -11,8 +11,6 @@ powerenPin = 4
 hold = 1
 led = LED(ledPin)
 led.on()
-power = LED(powerenPin)
-power.on()
 
 #functions that handle button events
 def when_pressed():
